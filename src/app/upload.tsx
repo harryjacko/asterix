@@ -1,26 +1,15 @@
 import { useCallback } from "react";
-import * as ImagePicker from "expo-image-picker";
-
 import Button from "@/shared/components/Button";
 import { Body2, H1 } from "@/shared/components/Typography";
+import { useDispatch } from "react-redux";
+import { actions } from "@/domain/rootActions";
 
 export default function UploadScreen() {
-  // TODO: Move from UI
-  const pickImage = async () => {
-    // No permissions request is necessary for launching the image library
-    let result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.All,
-      allowsEditing: true,
-      aspect: [4, 3],
-      quality: 1,
-    });
-    console.log(result);
-  };
+  const dispatch = useDispatch();
 
   const handleChoosePhotoPress = useCallback(() => {
-    //
-    pickImage();
-  }, []);
+    dispatch(actions.cats.selectAndUploadCatPhoto.base());
+  }, [dispatch]);
 
   return (
     <>

@@ -1,5 +1,5 @@
 import Button from "@/shared/components/Button";
-import { Link, router } from "expo-router";
+import { router } from "expo-router";
 import { useCallback } from "react";
 
 export default function IndexScreen() {

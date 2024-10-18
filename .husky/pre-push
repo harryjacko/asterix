@@ -1,4 +1,7 @@
 #!/usr/bin/env sh
 . "$(dirname -- "$0")/_/husky.sh"
 
-yarn test
+# TODO: Re-add with test cases
+# yarn test 
+
+
