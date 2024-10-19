@@ -2,7 +2,7 @@ import { combineReducers } from "@reduxjs/toolkit";
 import catsReducer from "./cats/reducer";
 
 const rootReducer = combineReducers({
-  game: catsReducer,
+  cats: catsReducer,
 });
 
 export default rootReducer;

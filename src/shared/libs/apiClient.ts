@@ -1,12 +1,11 @@
 import { create } from "apisauce";
 
-// TODO: put in .env
-const BASE_URL = "https://api.thecatapi.com/v1/";
-const API_KEY = "noAnActualAPIKey";
+const BASE_URL = process.env.EXPO_PUBLIC_BASE_URL;
+const API_KEY = process.env.EXPO_PUBLIC_API_KEY;
 
 const headers = {
   Accept: "application/json",
-  "x-api-key": API_KEY,
+  "x-api-key": API_KEY ?? "",
   "Content-Type": "application/json",
 };
 export enum RequestStatus {
