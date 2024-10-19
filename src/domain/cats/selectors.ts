@@ -7,4 +7,7 @@ export const catsSelectors = {
   getUploadRequestStatus: (state: RootState) => {
     return state.cats.uploadImageRequestStatus;
   },
+  getFetchImagesRequestStatus: (state: RootState) => {
+    return state.cats.fetchImagesRequestStatus;
+  },
 };

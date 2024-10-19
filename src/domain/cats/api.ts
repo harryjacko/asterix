@@ -16,7 +16,7 @@ const catsAPIService = {
 
     return baseAPIClient.post<void>("/images/upload", formData);
   },
-  fetchImages: () => baseAPIClient.get<ImageURISource[]>("/images"),
+  fetchImages: () => baseAPIClient.get<ImageURISource[]>("/images?limit=50"),
 };
 
 export default catsAPIService;

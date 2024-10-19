@@ -1,7 +1,14 @@
 import { RequestStatus } from "@/shared/libs/apiClient";
-import { ImageURISource } from "react-native";
+
+export interface CatImage {
+  id: string;
+  url: string;
+  width: number;
+  height: number;
+}
 
 export interface CatsState {
-  images: ImageURISource[];
+  images: CatImage[];
   uploadImageRequestStatus: RequestStatus;
+  fetchImagesRequestStatus: RequestStatus;
 }

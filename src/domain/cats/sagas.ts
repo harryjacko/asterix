@@ -5,6 +5,7 @@ import * as ImagePicker from "expo-image-picker";
 import { actions } from "../rootActions";
 import { ApiResponse } from "apisauce";
 import { api } from "../rootApi";
+import { CatImage } from "./types";
 
 /**
  * Should
@@ -22,15 +23,13 @@ function* selectAndUploadCatPhoto(): SagaIterator {
         mediaTypes: ImagePicker.MediaTypeOptions.Images,
         allowsEditing: true,
         aspect: [4, 3],
-        quality: 0.2,
+        quality: 0,
       },
     );
 
     // User cancelled
     if (imageResult.canceled) {
-      yield put(
-        actions.cats.selectAndUploadCatPhoto.failed(new Error("UserCancelled")),
-      );
+      yield put(actions.cats.selectAndUploadCatPhoto.failed("UserCancelled"));
       return;
     }
 
@@ -47,29 +46,39 @@ function* selectAndUploadCatPhoto(): SagaIterator {
         yield put(actions.cats.selectAndUploadCatPhoto.success());
       }
     } else {
-      yield put(
-        actions.cats.selectAndUploadCatPhoto.failed(new Error("UnknownError")),
-      );
+      yield put(actions.cats.selectAndUploadCatPhoto.failed("UnknownError"));
     }
   } catch (error) {
     yield put(actions.cats.selectAndUploadCatPhoto.failed(error as Error));
   }
 }
 
-// function* fetchImages(): SagaIterator {
-//   try {
-//     const result: ApiResponse<ImageURISource[]> = yield call(
-//       api.cats.fetchImages,
-//     );
-//     console.log(result.data);
-//   } catch (error) {}
-// }
+function* fetchImages(): SagaIterator {
+  try {
+    yield put(actions.cats.fetchImages.request());
+
+    const result: ApiResponse<CatImage[]> = yield call(api.cats.fetchImages);
+
+    if (result.ok && !!result.data) {
+      yield put(actions.cats.fetchImages.success(result.data));
+    } else {
+      yield put(actions.cats.fetchImages.failed());
+    }
+  } catch (error) {
+    yield put(actions.cats.fetchImages.failed(error as Error));
+  }
+}
 
 export default function* catsSagas() {
   yield all([
     takeLatest(
       [actions.cats.selectAndUploadCatPhoto.base.type],
       selectAndUploadCatPhoto,
+    ),
+    takeLatest([actions.cats.fetchImages.base.type], fetchImages),
+    takeLatest(
+      [actions.cats.selectAndUploadCatPhoto.success.type],
+      fetchImages,
     ),
   ]);
 }
