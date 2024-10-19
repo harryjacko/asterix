@@ -3,6 +3,11 @@ import uuid from "react-native-uuid";
 
 import baseAPIClient from "../../shared/libs/apiClient";
 
+interface SubmitVotePayload {
+  image_id: string;
+  value: number;
+}
+
 const catsAPIService = {
   uploadPhoto: (imageUri: string) => {
     const formData = new FormData();
@@ -16,7 +21,9 @@ const catsAPIService = {
 
     return baseAPIClient.post<void>("/images/upload", formData);
   },
-  fetchImages: () => baseAPIClient.get<ImageURISource[]>("/images?limit=50"),
+  fetchImages: () => baseAPIClient.get<ImageURISource[]>("/images?limit=50"), // Review limit
+  submitVote: (payload: SubmitVotePayload) =>
+    baseAPIClient.post<void>("/votes", payload),
 };
 
 export default catsAPIService;

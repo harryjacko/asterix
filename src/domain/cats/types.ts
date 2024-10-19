@@ -7,6 +7,11 @@ export interface CatImage {
   height: number;
 }
 
+export interface Vote {
+  value: "up" | "down";
+  imageId: string;
+}
+
 export interface CatsState {
   images: CatImage[];
   uploadImageRequestStatus: RequestStatus;

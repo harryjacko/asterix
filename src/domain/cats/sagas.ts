@@ -5,7 +5,7 @@ import * as ImagePicker from "expo-image-picker";
 import { actions } from "../rootActions";
 import { ApiResponse } from "apisauce";
 import { api } from "../rootApi";
-import { CatImage } from "./types";
+import { CatImage, Vote } from "./types";
 
 /**
  * Should
@@ -61,11 +61,31 @@ function* fetchImages(): SagaIterator {
 
     if (result.ok && !!result.data) {
       yield put(actions.cats.fetchImages.success(result.data));
+      console.log(result.data);
     } else {
       yield put(actions.cats.fetchImages.failed());
     }
   } catch (error) {
     yield put(actions.cats.fetchImages.failed(error as Error));
+  }
+}
+
+function* submitVote(action: { type: string; payload: Vote }): SagaIterator {
+  try {
+    yield put(actions.cats.submitVote.request());
+    const value = action.payload.value === "up" ? 1 : -1; // 1 for upvote, -1 for downvote
+    const result: ApiResponse<void> = yield call(api.cats.submitVote, {
+      image_id: action.payload.imageId,
+      value,
+    });
+
+    if (result.ok) {
+      yield put(actions.cats.submitVote.success());
+    } else {
+      yield put(actions.cats.submitVote.failed());
+    }
+  } catch (error) {
+    yield put(actions.cats.submitVote.failed(error as Error));
   }
 }
 
@@ -80,5 +100,6 @@ export default function* catsSagas() {
       [actions.cats.selectAndUploadCatPhoto.success.type],
       fetchImages,
     ),
+    takeLatest([actions.cats.submitVote.base.type], submitVote),
   ]);
 }
