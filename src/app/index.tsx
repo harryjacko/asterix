@@ -1,4 +1,4 @@
-import { CatImage } from "@/domain/cats/types";
+import { CatImageWithFavourites } from "@/domain/cats/types";
 import { actions } from "@/domain/rootActions";
 import { selectors } from "@/domain/rootSelectors";
 import Button from "@/shared/components/Button";
@@ -28,10 +28,15 @@ const Page = styled.View`
   background-color: #2d2b20;
   flex: 1;
 `;
+const Row = styled.View`
+  flex-direction: row;
+`;
 
 const ImageCardFooter = styled.View`
   width: 100%;
   flex-direction: row;
+  flex: 1;
+  justify-content: space-between;
   padding-horizontal: 24px;
   padding-vertical: 16px;
   height: 56px;
@@ -42,14 +47,27 @@ const Spacer = styled.View`
 `;
 
 const CARD_HEIGHT = Dimensions.get("window").height * 0.5;
+const assets = {
+  thumbup: require("../../assets/images/thumbup.png"),
+  thumbdown: require("../../assets/images/thumbdown.png"),
+  favourite: require("../../assets/images/favourite.png"),
+  favouriteFilled: require("../../assets/images/favourite-fill.png"),
+};
 
 export default function IndexScreen() {
   const dispatch = useDispatch();
-  const images = useSelector(selectors.cats.getImages);
+  const images = useSelector(selectors.cats.getImagesWithFavourites);
   const requestStatus = useSelector(selectors.cats.getFetchImagesRequestStatus);
+  const createFavRequestStatus = useSelector(
+    selectors.cats.getCreateFavouritesRequestStatus,
+  );
+  const removeFavRequestStatus = useSelector(
+    selectors.cats.getRemoveFavouritesRequestStatus,
+  );
 
   useMountEffect(() => {
     dispatch(actions.cats.fetchImages.base());
+    dispatch(actions.cats.fetchFavourites.base());
   });
 
   const handleOnUploadPress = useCallback(() => {
@@ -58,12 +76,15 @@ export default function IndexScreen() {
 
   const handleOnRefresh = useCallback(() => {
     dispatch(actions.cats.fetchImages.base());
+    dispatch(actions.cats.fetchFavourites.base());
   }, [dispatch]);
 
-  const imageCardKeyExtractor = (image: CatImage) => image.id;
+  const imageCardKeyExtractor = (image: CatImageWithFavourites) => image.id;
 
   // TODO: Move to it's own component?
-  const renderImageCard: ListRenderItem<CatImage> = ({ item: image }) => {
+  const renderImageCard: ListRenderItem<CatImageWithFavourites> = ({
+    item: image,
+  }) => {
     const handleUpVote = () => {
       console.log(`voted ${image.id}, up`);
       dispatch(
@@ -80,6 +101,26 @@ export default function IndexScreen() {
       );
     };
 
+    const handleOnFavourite = () => {
+      Haptics.selectionAsync();
+      if (!image.favouriteId) {
+        console.log(`favourited ${image.id}`);
+        dispatch(actions.cats.createFavourite.base(image.id));
+      } else {
+        console.log(`unfavourited ${image.id}`);
+        dispatch(
+          actions.cats.removeFavourite.base({
+            imageId: image.id,
+            favouriteId: image.favouriteId,
+          }),
+        );
+      }
+    };
+
+    const disableFavouriteButton =
+      createFavRequestStatus === RequestStatus.Pending ||
+      removeFavRequestStatus === RequestStatus.Pending;
+
     return (
       <ImageCard>
         <Image
@@ -87,12 +128,24 @@ export default function IndexScreen() {
           source={{ uri: image.url }}
         />
         <ImageCardFooter>
-          <Pressable onPress={handleUpVote} hitSlop={8}>
-            <Image source={require("../../assets/images/thumbup.png")} />
-          </Pressable>
-          <Spacer />
-          <Pressable onPress={handleDownVote} hitSlop={8}>
-            <Image source={require("../../assets/images/thumbdown.png")} />
+          <Row>
+            <Pressable onPress={handleUpVote} hitSlop={8}>
+              <Image source={assets.thumbup} />
+            </Pressable>
+            <Spacer />
+            <Pressable onPress={handleDownVote} hitSlop={8}>
+              <Image source={assets.thumbdown} />
+            </Pressable>
+          </Row>
+          <Pressable
+            onPress={handleOnFavourite}
+            hitSlop={8}
+            disabled={disableFavouriteButton}>
+            <Image
+              source={
+                !!image.favouriteId ? assets.favouriteFilled : assets.favourite
+              }
+            />
           </Pressable>
         </ImageCardFooter>
       </ImageCard>

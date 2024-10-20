@@ -5,9 +5,13 @@ import { actions } from "../rootActions";
 
 const initialState: CatsState = {
   images: [],
+  favourites: [],
 
   uploadImageRequestStatus: RequestStatus.Idle,
   fetchImagesRequestStatus: RequestStatus.Idle,
+  fetchFavouritesRequestStatus: RequestStatus.Idle,
+  createFavouritesRequestStatus: RequestStatus.Idle,
+  removeFavouritesRequestStatus: RequestStatus.Idle,
 };
 
 const reducer = createReducer(initialState, (builder) => {
@@ -37,6 +41,75 @@ const reducer = createReducer(initialState, (builder) => {
     })
     .addCase(actions.cats.fetchImages.request, (state) => {
       state.fetchImagesRequestStatus = RequestStatus.Pending;
+    })
+
+    //
+    // Fetch favourites
+    //
+    .addCase(actions.cats.fetchFavourites.success, (state, { payload }) => {
+      state.fetchFavouritesRequestStatus = RequestStatus.Fulfilled;
+      state.favourites = payload;
+    })
+    .addCase(actions.cats.fetchFavourites.failed, (state) => {
+      state.fetchFavouritesRequestStatus = RequestStatus.Failed;
+    })
+    .addCase(actions.cats.fetchFavourites.request, (state) => {
+      state.fetchFavouritesRequestStatus = RequestStatus.Pending;
+    })
+
+    //
+    // Create favourites
+    //
+    .addCase(actions.cats.createFavourite.success, (state, { payload }) => {
+      state.createFavouritesRequestStatus = RequestStatus.Fulfilled;
+      state.favourites = state.favourites.map((fav) => {
+        if (fav.image.id === payload.imageId) {
+          return {
+            id: payload.id,
+            image: {
+              id: payload.imageId,
+            },
+          };
+        }
+        return fav;
+      });
+    })
+    .addCase(actions.cats.createFavourite.failed, (state, { payload }) => {
+      state.createFavouritesRequestStatus = RequestStatus.Failed;
+      // Roll back optimisitc UI update
+      state.favourites = state.favourites.filter(
+        (fav) => fav.image.id !== payload.imageId,
+      );
+    })
+    .addCase(actions.cats.createFavourite.request, (state, { payload }) => {
+      state.createFavouritesRequestStatus = RequestStatus.Pending;
+      // Optimistically update UI, we'll roll back if it fails
+      state.favourites = [
+        ...state.favourites,
+        {
+          id: 123,
+          image: {
+            id: payload.imageId,
+          },
+        },
+      ];
+    })
+
+    //
+    // Remove favourites
+    //
+    .addCase(actions.cats.removeFavourite.success, (state) => {
+      state.removeFavouritesRequestStatus = RequestStatus.Fulfilled;
+    })
+    .addCase(actions.cats.removeFavourite.failed, (state) => {
+      state.removeFavouritesRequestStatus = RequestStatus.Failed;
+    })
+    .addCase(actions.cats.removeFavourite.request, (state, { payload }) => {
+      state.removeFavouritesRequestStatus = RequestStatus.Pending;
+      // Optimistically remove favourite
+      state.favourites = state.favourites.filter(
+        (fav) => fav.image.id !== payload.imageId,
+      );
     });
 });
 

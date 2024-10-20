@@ -5,7 +5,8 @@ import * as ImagePicker from "expo-image-picker";
 import { actions } from "../rootActions";
 import { ApiResponse } from "apisauce";
 import { api } from "../rootApi";
-import { CatImage, Vote } from "./types";
+import { CatImage, FavouriteImage, RemoveFavouriteAction, Vote } from "./types";
+import { CreateFavouriteResponse } from "./api";
 
 /**
  * Should
@@ -49,7 +50,9 @@ function* selectAndUploadCatPhoto(): SagaIterator {
       yield put(actions.cats.selectAndUploadCatPhoto.failed("UnknownError"));
     }
   } catch (error) {
-    yield put(actions.cats.selectAndUploadCatPhoto.failed(error as Error));
+    yield put(
+      actions.cats.selectAndUploadCatPhoto.failed((error as Error).message),
+    );
   }
 }
 
@@ -61,12 +64,11 @@ function* fetchImages(): SagaIterator {
 
     if (result.ok && !!result.data) {
       yield put(actions.cats.fetchImages.success(result.data));
-      console.log(result.data);
     } else {
       yield put(actions.cats.fetchImages.failed());
     }
   } catch (error) {
-    yield put(actions.cats.fetchImages.failed(error as Error));
+    yield put(actions.cats.fetchImages.failed((error as Error).message));
   }
 }
 
@@ -85,7 +87,86 @@ function* submitVote(action: { type: string; payload: Vote }): SagaIterator {
       yield put(actions.cats.submitVote.failed());
     }
   } catch (error) {
-    yield put(actions.cats.submitVote.failed(error as Error));
+    yield put(actions.cats.submitVote.failed((error as Error).message));
+  }
+}
+
+function* createFavourite(action: {
+  type: string;
+  payload: string;
+}): SagaIterator {
+  const imageId = action.payload;
+  try {
+    yield put(actions.cats.createFavourite.request({ imageId }));
+
+    const result: ApiResponse<CreateFavouriteResponse> = yield call(
+      api.cats.createFavourite,
+      {
+        image_id: action.payload,
+      },
+    );
+
+    if (result.ok && !!result.data) {
+      yield put(
+        actions.cats.createFavourite.success({
+          id: result.data.id,
+          imageId,
+        }),
+      );
+    } else {
+      yield put(actions.cats.createFavourite.failed({ imageId }));
+    }
+  } catch (error) {
+    yield put(
+      actions.cats.createFavourite.failed({
+        error: (error as Error).message,
+        imageId,
+      }),
+    );
+  }
+}
+
+function* removeFavourite(action: {
+  type: string;
+  payload: RemoveFavouriteAction;
+}): SagaIterator {
+  const { imageId, favouriteId } = action.payload;
+  try {
+    yield put(actions.cats.removeFavourite.request({ imageId }));
+
+    const result: ApiResponse<void> = yield call(
+      api.cats.removeFavourite,
+      favouriteId,
+    );
+
+    if (result.ok) {
+      yield put(actions.cats.removeFavourite.success({ imageId }));
+    } else {
+      yield put(actions.cats.removeFavourite.failed({ imageId }));
+    }
+  } catch (error) {
+    yield put(
+      actions.cats.removeFavourite.failed({
+        error: (error as Error).message,
+        imageId,
+      }),
+    );
+  }
+}
+
+function* fetchFavourites(): SagaIterator {
+  try {
+    yield put(actions.cats.fetchFavourites.request());
+    const result: ApiResponse<FavouriteImage[]> = yield call(
+      api.cats.fetchFavourites,
+    );
+    if (result.ok && !!result.data) {
+      yield put(actions.cats.fetchFavourites.success(result.data));
+    } else {
+      yield put(actions.cats.fetchFavourites.failed());
+    }
+  } catch (error) {
+    yield put(actions.cats.fetchFavourites.failed((error as Error).message));
   }
 }
 
@@ -95,11 +176,19 @@ export default function* catsSagas() {
       [actions.cats.selectAndUploadCatPhoto.base.type],
       selectAndUploadCatPhoto,
     ),
+
     takeLatest([actions.cats.fetchImages.base.type], fetchImages),
     takeLatest(
       [actions.cats.selectAndUploadCatPhoto.success.type],
       fetchImages,
     ),
+
     takeLatest([actions.cats.submitVote.base.type], submitVote),
+
+    takeLatest([actions.cats.fetchFavourites.base.type], fetchFavourites),
+    takeLatest([actions.cats.createFavourite.base.type], createFavourite),
+    takeLatest([actions.cats.removeFavourite.base.type], removeFavourite),
+    // If removing favourite fails lets recover by calling fetch favourites
+    takeLatest([actions.cats.removeFavourite.failed.type], fetchFavourites),
   ]);
 }
