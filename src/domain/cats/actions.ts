@@ -5,6 +5,7 @@ import {
   FavouriteImage,
   RemoveFavouriteAction,
   Vote,
+  Votes,
 } from "./types";
 
 export const catsActions = {
@@ -52,5 +53,12 @@ export const catsActions = {
     request: createAction<void>("cats/fetchFavourites/request"),
     success: createAction<FavouriteImage[]>("cats/fetchFavourites/success"),
     failed: createAction<Failed>("cats/fetchFavourites/failed"),
+  },
+
+  fetchVotes: {
+    base: createAction<void>("cats/fetchVotes/base"),
+    request: createAction<void>("cats/fetchVotes/request"),
+    success: createAction<Votes[]>("cats/fetchVotes/success"),
+    failed: createAction<Failed>("cats/fetchVotes/failed"),
   },
 };

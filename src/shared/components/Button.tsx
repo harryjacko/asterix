@@ -3,7 +3,7 @@ import { Colors } from "../constants/colors";
 import { Body1 } from "./Typography";
 
 const ButtonView = styled.TouchableOpacity`
-  background-color: ${Colors.light.background};
+  background-color: ${Colors.asterix.altBackground};
   height: 56px;
   align-items: center;
   justify-content: center;
@@ -18,7 +18,7 @@ interface Props {
 export default function Button({ title, onPress }: Props) {
   return (
     <ButtonView onPress={onPress} activeOpacity={0.5}>
-      <Body1 color={Colors.light.text}>{title}</Body1>
+      <Body1 color={Colors.asterix.altText}>{title}</Body1>
     </ButtonView>
   );
 }

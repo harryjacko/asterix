@@ -9,12 +9,11 @@ export const Colors = {
     tabIconDefault: "#687076",
     tabIconSelected: tintColorLight,
   },
-  // dark: {
-  //   text: "#ECEDEE",
-  //   background: "#151718",
-  //   tint: tintColorDark,
-  //   icon: "#9BA1A6",
-  //   tabIconDefault: "#9BA1A6",
-  //   tabIconSelected: tintColorDark,
-  // },
+  asterix: {
+    text: "#F8F4F0",
+    background: "#1E1E1E",
+
+    altText: "#1E1E1E",
+    altBackground: "#EFF87A",
+  },
 };

@@ -1,8 +1,8 @@
-import { CatImageWithFavourites } from "@/domain/cats/types";
+import { CatImageWithFavouritesAndVotes } from "@/domain/cats/types";
 import { actions } from "@/domain/rootActions";
 import { selectors } from "@/domain/rootSelectors";
 import Button from "@/shared/components/Button";
-import { H2 } from "@/shared/components/Typography";
+import { Body2, H2 } from "@/shared/components/Typography";
 import { useMountEffect } from "@/shared/hooks/useMountEffect";
 import { RequestStatus } from "@/shared/libs/apiClient";
 import { router } from "expo-router";
@@ -19,13 +19,14 @@ import {
 import { useDispatch, useSelector } from "react-redux";
 import styled from "styled-components/native";
 import * as Haptics from "expo-haptics";
+import { Colors } from "@/shared/constants/colors";
 
 const ImageCard = styled.View`
   width: 100%;
-  background-color: #211f15;
+  background-color: ${Colors.asterix.background};
 `;
 const Page = styled.View`
-  background-color: #2d2b20;
+  background-color: ${Colors.asterix.background};
   flex: 1;
 `;
 const Row = styled.View`
@@ -56,8 +57,14 @@ const assets = {
 
 export default function IndexScreen() {
   const dispatch = useDispatch();
-  const images = useSelector(selectors.cats.getImagesWithFavourites);
+  const images = useSelector(selectors.cats.getImagesWithFavouritesAndVotes);
   const requestStatus = useSelector(selectors.cats.getFetchImagesRequestStatus);
+  const votesRequestStatus = useSelector(
+    selectors.cats.getFetchVotesRequestStatus,
+  );
+  const submitVoteRequestStatus = useSelector(
+    selectors.cats.getSubmitVoteRequestStatus,
+  );
   const createFavRequestStatus = useSelector(
     selectors.cats.getCreateFavouritesRequestStatus,
   );
@@ -66,27 +73,27 @@ export default function IndexScreen() {
   );
 
   useMountEffect(() => {
-    dispatch(actions.cats.fetchImages.base());
-    dispatch(actions.cats.fetchFavourites.base());
+    refreshData();
   });
 
   const handleOnUploadPress = useCallback(() => {
     router.push("/upload");
   }, []);
 
-  const handleOnRefresh = useCallback(() => {
+  const refreshData = useCallback(() => {
     dispatch(actions.cats.fetchImages.base());
     dispatch(actions.cats.fetchFavourites.base());
+    dispatch(actions.cats.fetchVotes.base());
   }, [dispatch]);
 
-  const imageCardKeyExtractor = (image: CatImageWithFavourites) => image.id;
+  const imageCardKeyExtractor = (image: CatImageWithFavouritesAndVotes) =>
+    image.id;
 
   // TODO: Move to it's own component?
-  const renderImageCard: ListRenderItem<CatImageWithFavourites> = ({
+  const renderImageCard: ListRenderItem<CatImageWithFavouritesAndVotes> = ({
     item: image,
   }) => {
     const handleUpVote = () => {
-      console.log(`voted ${image.id}, up`);
       dispatch(
         actions.cats.submitVote.base({ imageId: image.id, value: "up" }),
       );
@@ -94,7 +101,6 @@ export default function IndexScreen() {
     };
 
     const handleDownVote = () => {
-      console.log(`voted ${image.id}, down`);
       Haptics.selectionAsync();
       dispatch(
         actions.cats.submitVote.base({ imageId: image.id, value: "down" }),
@@ -104,10 +110,8 @@ export default function IndexScreen() {
     const handleOnFavourite = () => {
       Haptics.selectionAsync();
       if (!image.favouriteId) {
-        console.log(`favourited ${image.id}`);
         dispatch(actions.cats.createFavourite.base(image.id));
       } else {
-        console.log(`unfavourited ${image.id}`);
         dispatch(
           actions.cats.removeFavourite.base({
             imageId: image.id,
@@ -121,6 +125,10 @@ export default function IndexScreen() {
       createFavRequestStatus === RequestStatus.Pending ||
       removeFavRequestStatus === RequestStatus.Pending;
 
+    const votesLoading =
+      votesRequestStatus === RequestStatus.Pending ||
+      submitVoteRequestStatus === RequestStatus.Pending;
+
     return (
       <ImageCard>
         <Image
@@ -129,13 +137,28 @@ export default function IndexScreen() {
         />
         <ImageCardFooter>
           <Row>
-            <Pressable onPress={handleUpVote} hitSlop={8}>
+            <Pressable
+              onPress={handleUpVote}
+              hitSlop={8}
+              disabled={votesLoading}>
               <Image source={assets.thumbup} />
             </Pressable>
             <Spacer />
-            <Pressable onPress={handleDownVote} hitSlop={8}>
+            <Pressable
+              onPress={handleDownVote}
+              hitSlop={8}
+              disabled={votesLoading}>
               <Image source={assets.thumbdown} />
             </Pressable>
+            <Spacer />
+            <Body2>
+              {votesLoading ? (
+                <ActivityIndicator size={"small"} />
+              ) : (
+                `${image.voteTotal} `
+              )}
+              votes
+            </Body2>
           </Row>
           <Pressable
             onPress={handleOnFavourite}
@@ -154,7 +177,12 @@ export default function IndexScreen() {
 
   const renderEmptyState = () => {
     if (requestStatus === RequestStatus.Pending) {
-      return <ActivityIndicator size={"large"} color={"#FFEA8B"} />;
+      return (
+        <ActivityIndicator
+          size={"large"}
+          color={Colors.asterix.altBackground}
+        />
+      );
     }
     return (
       <>
@@ -175,9 +203,9 @@ export default function IndexScreen() {
         refreshControl={
           <RefreshControl
             refreshing={requestStatus === RequestStatus.Pending}
-            onRefresh={handleOnRefresh}
-            colors={["#FFEA8B"]} // Android
-            tintColor={"#FFEA8B"} // iOS
+            onRefresh={refreshData}
+            colors={[Colors.asterix.altBackground]} // Android
+            tintColor={Colors.asterix.altBackground} // iOS
           />
         }
       />

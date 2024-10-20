@@ -11,6 +11,10 @@ export interface CatImageWithFavourites extends CatImage {
   favouriteId: number | undefined;
 }
 
+export interface CatImageWithFavouritesAndVotes extends CatImageWithFavourites {
+  voteTotal: number;
+}
+
 export interface Vote {
   value: "up" | "down";
   imageId: string;
@@ -34,6 +38,7 @@ export interface Votes {
 export interface CatsState {
   images: CatImage[];
   favourites: FavouriteImage[];
+  votes: Votes[];
 
   // Request status
   uploadImageRequestStatus: RequestStatus;
@@ -41,6 +46,8 @@ export interface CatsState {
   fetchFavouritesRequestStatus: RequestStatus;
   createFavouritesRequestStatus: RequestStatus;
   removeFavouritesRequestStatus: RequestStatus;
+  fetchVotesRequestStatus: RequestStatus;
+  submitVoteRequestStatus: RequestStatus;
 }
 
 export type Failed = undefined | string;

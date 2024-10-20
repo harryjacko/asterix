@@ -5,7 +5,13 @@ import * as ImagePicker from "expo-image-picker";
 import { actions } from "../rootActions";
 import { ApiResponse } from "apisauce";
 import { api } from "../rootApi";
-import { CatImage, FavouriteImage, RemoveFavouriteAction, Vote } from "./types";
+import {
+  CatImage,
+  FavouriteImage,
+  RemoveFavouriteAction,
+  Vote,
+  Votes,
+} from "./types";
 import { CreateFavouriteResponse } from "./api";
 
 /**
@@ -170,6 +176,20 @@ function* fetchFavourites(): SagaIterator {
   }
 }
 
+function* fetchVotes(): SagaIterator {
+  try {
+    yield put(actions.cats.fetchVotes.request());
+    const result: ApiResponse<Votes[]> = yield call(api.cats.fetchVotes);
+    if (result.ok && !!result.data) {
+      yield put(actions.cats.fetchVotes.success(result.data));
+    } else {
+      yield put(actions.cats.fetchVotes.failed());
+    }
+  } catch (error) {
+    yield put(actions.cats.fetchVotes.failed((error as Error).message));
+  }
+}
+
 export default function* catsSagas() {
   yield all([
     takeLatest(
@@ -184,6 +204,8 @@ export default function* catsSagas() {
     ),
 
     takeLatest([actions.cats.submitVote.base.type], submitVote),
+    takeLatest([actions.cats.fetchVotes.base.type], fetchVotes),
+    takeLatest([actions.cats.submitVote.success.type], fetchVotes),
 
     takeLatest([actions.cats.fetchFavourites.base.type], fetchFavourites),
     takeLatest([actions.cats.createFavourite.base.type], createFavourite),

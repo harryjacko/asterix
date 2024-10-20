@@ -6,12 +6,15 @@ import { actions } from "../rootActions";
 const initialState: CatsState = {
   images: [],
   favourites: [],
+  votes: [],
 
   uploadImageRequestStatus: RequestStatus.Idle,
   fetchImagesRequestStatus: RequestStatus.Idle,
   fetchFavouritesRequestStatus: RequestStatus.Idle,
   createFavouritesRequestStatus: RequestStatus.Idle,
   removeFavouritesRequestStatus: RequestStatus.Idle,
+  fetchVotesRequestStatus: RequestStatus.Idle,
+  submitVoteRequestStatus: RequestStatus.Idle,
 };
 
 const reducer = createReducer(initialState, (builder) => {
@@ -41,6 +44,32 @@ const reducer = createReducer(initialState, (builder) => {
     })
     .addCase(actions.cats.fetchImages.request, (state) => {
       state.fetchImagesRequestStatus = RequestStatus.Pending;
+    })
+
+    //
+    // Fetch Votes
+    //
+    .addCase(actions.cats.fetchVotes.success, (state, { payload }) => {
+      state.fetchVotesRequestStatus = RequestStatus.Fulfilled;
+      state.votes = payload;
+    })
+    .addCase(actions.cats.fetchVotes.failed, (state) => {
+      state.fetchVotesRequestStatus = RequestStatus.Failed;
+    })
+    .addCase(actions.cats.fetchVotes.request, (state) => {
+      state.fetchVotesRequestStatus = RequestStatus.Pending;
+    })
+    //
+    // Submit Vote
+    //
+    .addCase(actions.cats.submitVote.success, (state) => {
+      state.submitVoteRequestStatus = RequestStatus.Fulfilled;
+    })
+    .addCase(actions.cats.submitVote.failed, (state) => {
+      state.submitVoteRequestStatus = RequestStatus.Failed;
+    })
+    .addCase(actions.cats.submitVote.request, (state) => {
+      state.submitVoteRequestStatus = RequestStatus.Pending;
     })
 
     //
