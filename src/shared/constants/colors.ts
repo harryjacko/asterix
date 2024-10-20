@@ -15,5 +15,7 @@ export const Colors = {
 
     altText: "#1E1E1E",
     altBackground: "#EFF87A",
+
+    lottieBackground: "#FFD939",
   },
 };

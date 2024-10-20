@@ -8,24 +8,25 @@ interface TypographyProps {
 }
 
 export const Body1 = styled.Text<TypographyProps>`
-  font-size: 20px;
+  font-size: 16px;
   color: ${(p) => (p.color ? p.color : Colors.asterix.text)};
-  font-family: ${(p) => (p.fontFamily ? p.fontFamily : "SpaceMono-Regular")};
+  font-family: ${(p) => (p.fontFamily ? p.fontFamily : "FiraSans")};
 `;
 
 export const Body2 = styled.Text<TypographyProps>`
   font-size: 16px;
   color: ${(p) => (p.color ? p.color : Colors.asterix.text)};
-  font-family: ${(p) => (p.fontFamily ? p.fontFamily : "SpaceMono-Regular")};
+  font-family: ${(p) => (p.fontFamily ? p.fontFamily : "FiraSansSemiBold")};
 `;
 
 export const H1 = styled.Text<TypographyProps>`
-  font-size: 32px;
-  color: ${(p) => (p.color ? p.color : Colors.asterix.text)};
-  font-family: ${(p) => (p.fontFamily ? p.fontFamily : "SpaceMono-Regular")};
-`;
-export const H2 = styled.Text<TypographyProps>`
   font-size: 24px;
   color: ${(p) => (p.color ? p.color : Colors.asterix.text)};
-  font-family: ${(p) => (p.fontFamily ? p.fontFamily : "SpaceMono-Regular")};
+  font-family: ${(p) => (p.fontFamily ? p.fontFamily : "FiraSansSemiBold")};
+`;
+
+export const H2 = styled.Text<TypographyProps>`
+  font-size: 32px;
+  color: ${(p) => (p.color ? p.color : Colors.asterix.text)};
+  font-family: ${(p) => (p.fontFamily ? p.fontFamily : "FiraSansSemiBold")};
 `;

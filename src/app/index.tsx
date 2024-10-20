@@ -1,8 +1,7 @@
 import { CatImageWithFavouritesAndVotes } from "@/domain/cats/types";
 import { actions } from "@/domain/rootActions";
 import { selectors } from "@/domain/rootSelectors";
-import Button from "@/shared/components/Button";
-import { Body2, H2 } from "@/shared/components/Typography";
+import { FloatingActionButton } from "@/shared/components/Button";
 import { useMountEffect } from "@/shared/hooks/useMountEffect";
 import { RequestStatus } from "@/shared/libs/apiClient";
 import { router } from "expo-router";
@@ -20,6 +19,9 @@ import { useDispatch, useSelector } from "react-redux";
 import styled from "styled-components/native";
 import * as Haptics from "expo-haptics";
 import { Colors } from "@/shared/constants/colors";
+import { Body1, H1 } from "@/shared/components/Typography";
+import LottieCat from "@/shared/components/LottieCat";
+import Space from "@/shared/components/Space";
 
 const ImageCard = styled.View`
   width: 100%;
@@ -33,6 +35,11 @@ const Row = styled.View`
   flex-direction: row;
 `;
 
+const EmptyContainer = styled.View`
+  padding-top: 56px;
+  padding-horizontal: 40px;
+`;
+
 const ImageCardFooter = styled.View`
   width: 100%;
   flex-direction: row;
@@ -43,16 +50,13 @@ const ImageCardFooter = styled.View`
   height: 56px;
 `;
 
-const Spacer = styled.View`
-  margin-right: 12px;
-`;
-
 const CARD_HEIGHT = Dimensions.get("window").height * 0.5;
 const assets = {
   thumbup: require("../../assets/images/thumbup.png"),
   thumbdown: require("../../assets/images/thumbdown.png"),
   favourite: require("../../assets/images/favourite.png"),
   favouriteFilled: require("../../assets/images/favourite-fill.png"),
+  lottieNoCats: require("../../assets/lotties/nocats.json"),
 };
 
 export default function IndexScreen() {
@@ -143,22 +147,22 @@ export default function IndexScreen() {
               disabled={votesLoading}>
               <Image source={assets.thumbup} />
             </Pressable>
-            <Spacer />
+            <Space horizontaloffset={1.5} />
             <Pressable
               onPress={handleDownVote}
               hitSlop={8}
               disabled={votesLoading}>
               <Image source={assets.thumbdown} />
             </Pressable>
-            <Spacer />
-            <Body2>
+            <Space horizontaloffset={1.5} />
+            <Body1>
               {votesLoading ? (
                 <ActivityIndicator size={"small"} />
               ) : (
                 `${image.voteTotal} `
               )}
               votes
-            </Body2>
+            </Body1>
           </Row>
           <Pressable
             onPress={handleOnFavourite}
@@ -178,23 +182,26 @@ export default function IndexScreen() {
   const renderEmptyState = () => {
     if (requestStatus === RequestStatus.Pending) {
       return (
-        <ActivityIndicator
-          size={"large"}
-          color={Colors.asterix.altBackground}
-        />
+        <EmptyContainer>
+          <ActivityIndicator
+            size={"large"}
+            color={Colors.asterix.altBackground}
+          />
+        </EmptyContainer>
       );
     }
     return (
-      <>
-        <H2>You don't have any cats..</H2>
-      </>
+      <EmptyContainer>
+        <LottieCat autoPlay loop={false} source={assets.lottieNoCats} />
+        <H1>Where are all the cats?</H1>
+        <Space verticaloffset={2} />
+        <Body1>Upload a picture of your furry friend!</Body1>
+      </EmptyContainer>
     );
   };
 
   return (
     <Page>
-      <Button onPress={handleOnUploadPress} title="Upload" />
-
       <FlatList
         data={images}
         renderItem={renderImageCard}
@@ -209,6 +216,7 @@ export default function IndexScreen() {
           />
         }
       />
+      <FloatingActionButton onPress={handleOnUploadPress} title="＋" />
     </Page>
   );
 }
