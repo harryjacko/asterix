@@ -5,8 +5,8 @@ import { actions } from "../rootActions";
 
 const initialState: CatsState = {
   images: [],
-  favourites: [],
-  votes: [],
+  favourites: {},
+  votes: {},
 
   uploadImageRequestStatus: RequestStatus.Idle,
   fetchImagesRequestStatus: RequestStatus.Idle,
@@ -16,6 +16,8 @@ const initialState: CatsState = {
   fetchVotesRequestStatus: RequestStatus.Idle,
   submitVoteRequestStatus: RequestStatus.Idle,
 };
+
+const TEMPORARY_ID = 999;
 
 const reducer = createReducer(initialState, (builder) => {
   builder
@@ -91,37 +93,25 @@ const reducer = createReducer(initialState, (builder) => {
     //
     .addCase(actions.cats.createFavourite.success, (state, { payload }) => {
       state.createFavouritesRequestStatus = RequestStatus.Fulfilled;
-      state.favourites = state.favourites.map((fav) => {
-        if (fav.image.id === payload.imageId) {
-          return {
-            id: payload.id,
-            image: {
-              id: payload.imageId,
-            },
-          };
-        }
-        return fav;
-      });
+      state.favourites = {
+        ...state.favourites,
+        [payload.imageId]: payload.id,
+      };
     })
     .addCase(actions.cats.createFavourite.failed, (state, { payload }) => {
       state.createFavouritesRequestStatus = RequestStatus.Failed;
       // Roll back optimisitc UI update
-      state.favourites = state.favourites.filter(
-        (fav) => fav.image.id !== payload.imageId,
-      );
+      const { [payload.imageId]: _tempFavId, ...remainingFavourites } =
+        state.favourites;
+      state.favourites = remainingFavourites;
     })
     .addCase(actions.cats.createFavourite.request, (state, { payload }) => {
       state.createFavouritesRequestStatus = RequestStatus.Pending;
       // Optimistically update UI, we'll roll back if it fails
-      state.favourites = [
+      state.favourites = {
         ...state.favourites,
-        {
-          id: 123,
-          image: {
-            id: payload.imageId,
-          },
-        },
-      ];
+        [payload.imageId]: TEMPORARY_ID,
+      };
     })
 
     //
@@ -136,9 +126,9 @@ const reducer = createReducer(initialState, (builder) => {
     .addCase(actions.cats.removeFavourite.request, (state, { payload }) => {
       state.removeFavouritesRequestStatus = RequestStatus.Pending;
       // Optimistically remove favourite
-      state.favourites = state.favourites.filter(
-        (fav) => fav.image.id !== payload.imageId,
-      );
+      const { [payload.imageId]: _favId, ...remainingFavourites } =
+        state.favourites;
+      state.favourites = remainingFavourites;
     });
 });
 

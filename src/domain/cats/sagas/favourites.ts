@@ -5,6 +5,7 @@ import { actions } from "@/domain/rootActions";
 import { api } from "@/domain/rootApi";
 import { FavouriteImage, RemoveFavouriteAction } from "../types";
 import { CreateFavouriteResponse } from "../api";
+import { transformFavouritesByImageId } from "../transforms";
 
 export function* createFavourite(action: {
   type: string;
@@ -76,7 +77,8 @@ export function* fetchFavourites(): SagaIterator {
       api.cats.fetchFavourites,
     );
     if (result.ok && !!result.data) {
-      yield put(actions.cats.fetchFavourites.success(result.data));
+      const transformedFavourites = transformFavouritesByImageId(result.data);
+      yield put(actions.cats.fetchFavourites.success(transformedFavourites));
     } else {
       yield put(actions.cats.fetchFavourites.failed());
     }

@@ -18,49 +18,18 @@ const getFetchVotesRequestStatus = (state: RootState) =>
 const getSubmitVoteRequestStatus = (state: RootState) =>
   state.cats.submitVoteRequestStatus;
 
-const getImagesWithFavourites = createSelector(
-  getImages,
-  getFavourites,
-  (images, favourites) => {
-    return images.map((image) => {
-      // TODO: More efficient? e.g. convert to map
-      const favourite = favourites.find((fav) => fav.image.id === image.id);
-
-      return {
-        id: image.id,
-        url: image.url,
-        width: image.width,
-        height: image.height,
-        favouriteId: favourite ? favourite.id : undefined,
-      };
-    });
-  },
-);
-
 export const getImagesWithFavouritesAndVotes = createSelector(
   getImages,
   getFavourites,
   getVotes,
   (images, favourites, votes) => {
-    // TODO: move these tranforms to the saga?.
-    const favouritesMap = new Map(
-      favourites.map((fav) => [fav.image.id, fav.id]),
-    );
-    const votesMap = votes.reduce(
-      (acc, vote) => {
-        acc[vote.image.id] = (acc[vote.image.id] || 0) + vote.value;
-        return acc;
-      },
-      {} as Record<string, number>,
-    );
-
     return images.map((image) => ({
       id: image.id,
       url: image.url,
       width: image.width,
       height: image.height,
-      favouriteId: favouritesMap.get(image.id), // undefined if not found
-      voteTotal: votesMap[image.id] || 0, // assume 0 if no votes
+      favouriteId: favourites[image.id], // undefined if not found
+      voteTotal: votes[image.id] || 0, // assume 0 if no votes
     }));
   },
 );
@@ -75,6 +44,5 @@ export const catsSelectors = {
   getRemoveFavouritesRequestStatus,
   getFetchVotesRequestStatus,
   getSubmitVoteRequestStatus,
-  getImagesWithFavourites,
   getImagesWithFavouritesAndVotes,
 };

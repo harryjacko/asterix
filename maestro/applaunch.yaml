@@ -1,0 +1,11 @@
+appId: com.asterix.app
+---
+- killApp
+
+- launchApp:
+    clearState: true
+
+- tapOn:
+    id: "uploadFAB"
+
+- assertVisible: "Upload a picture of your cat"

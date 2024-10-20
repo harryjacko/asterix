@@ -2,10 +2,10 @@ import { createAction } from "@reduxjs/toolkit";
 import {
   CatImage,
   Failed,
-  FavouriteImage,
+  FavouritesByImageId,
   RemoveFavouriteAction,
   Vote,
-  Votes,
+  VotesTalliedByImageId,
 } from "./types";
 
 export const catsActions = {
@@ -51,14 +51,14 @@ export const catsActions = {
   fetchFavourites: {
     base: createAction<void>("cats/fetchFavourites/base"),
     request: createAction<void>("cats/fetchFavourites/request"),
-    success: createAction<FavouriteImage[]>("cats/fetchFavourites/success"),
+    success: createAction<FavouritesByImageId>("cats/fetchFavourites/success"),
     failed: createAction<Failed>("cats/fetchFavourites/failed"),
   },
 
   fetchVotes: {
     base: createAction<void>("cats/fetchVotes/base"),
     request: createAction<void>("cats/fetchVotes/request"),
-    success: createAction<Votes[]>("cats/fetchVotes/success"),
+    success: createAction<VotesTalliedByImageId>("cats/fetchVotes/success"),
     failed: createAction<Failed>("cats/fetchVotes/failed"),
   },
 };

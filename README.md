@@ -1,18 +1,24 @@
-# Welcome to your Expo app 👋
+# Asterix - Cat App!
 
 This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+
+It is a personal cat app, where you can upload photos of your furry friends, vote on them and favourite. It's a technical take home test for Waracle.
+
+## Pre-requisites
+
+Follow Expo's development environment steps found [here](https://docs.expo.dev/get-started/set-up-your-environment/)
 
 ## Get started
 
 1. Install dependencies
 
    ```bash
-   npm install
+   yarn install
    ```
 
 2. Start the app
 
-   ```bash
+   ```
     npx expo start
    ```
 
@@ -23,28 +29,48 @@ In the output, you'll find options to open the app in a
 - [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
 - [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+## Tests
 
-## Get a fresh project
+### Unit tests
 
-When you're ready, run:
+Assuming you can run the builds, no pre-requisites should be needed for the unit tests.
 
-```bash
-npm run reset-project
+To run:
+
+```
+yarn test
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+NOTE: Husky git hooks have been configured to run unit tests on pre-push.
 
-## Learn more
+### E2E tests
 
-To learn more about developing your project with Expo, look at the following resources:
+Application uses [Maestro](https://maestro.mobile.dev/) for E2E tests.
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+Note: These were configured and tested on iOS emulator.
 
-## Join the community
+#### Pre-requisites
 
-Join our community of developers creating universal apps.
+Follow the installation steps for your platform [here](https://maestro.mobile.dev/getting-started/installing-maestro)
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+#### Running tests
+
+1. Run the Application
+
+```
+yarn run:ios
+```
+
+2. Running the tests
+
+2.1 (Optional step) When running on slower hardware you may need to bump driver startup timeout. [Reference](https://maestro.mobile.dev/advanced/configuring-maestro-driver-timeout).
+
+```
+export MAESTRO_DRIVER_STARTUP_TIMEOUT=60000 # setting 60 seconds
+```
+
+2.2 Run the test flows
+
+```
+maestro test maestro/
+```

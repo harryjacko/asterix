@@ -10,15 +10,17 @@
     "splash": {
       "image": "./assets/images/splash.png",
       "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
+      "backgroundColor": "#1E1E1E"
     },
     "ios": {
+      "bundleIdentifier": "com.asterix.app",
       "supportsTablet": true
     },
     "android": {
+      "package": "com.asterix.app",
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
-        "backgroundColor": "#ffffff"
+        "backgroundColor": "#1E1E1E"
       }
     },
     "web": {

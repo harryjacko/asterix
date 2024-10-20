@@ -29,7 +29,7 @@ const catsAPIService = {
 
     return baseAPIClient.post<void>("/images/upload", formData);
   },
-  fetchImages: () => baseAPIClient.get<ImageURISource[]>("/images?limit=50"), // Review limit
+  fetchImages: () => baseAPIClient.get<ImageURISource[]>("/images?limit=10"), // Last 10 images added
 
   submitVote: (payload: SubmitVotePayload) =>
     baseAPIClient.post<void>("/votes", payload),

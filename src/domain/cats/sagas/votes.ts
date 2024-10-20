@@ -4,13 +4,15 @@ import { ApiResponse } from "apisauce";
 import { actions } from "@/domain/rootActions";
 import { api } from "@/domain/rootApi";
 import { Vote, Votes } from "../types";
+import { transformVotesByImageIdAndTally } from "../transforms";
 
 export function* fetchVotes(): SagaIterator {
   try {
     yield put(actions.cats.fetchVotes.request());
     const result: ApiResponse<Votes[]> = yield call(api.cats.fetchVotes);
     if (result.ok && !!result.data) {
-      yield put(actions.cats.fetchVotes.success(result.data));
+      const transformedVotes = transformVotesByImageIdAndTally(result.data);
+      yield put(actions.cats.fetchVotes.success(transformedVotes));
     } else {
       yield put(actions.cats.fetchVotes.failed());
     }

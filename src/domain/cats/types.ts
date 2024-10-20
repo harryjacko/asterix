@@ -35,10 +35,13 @@ export interface Votes {
   value: number; // -1 or 1
 }
 
+export type VotesTalliedByImageId = Record<string, number>;
+export type FavouritesByImageId = Record<string, number>;
+
 export interface CatsState {
   images: CatImage[];
-  favourites: FavouriteImage[];
-  votes: Votes[];
+  favourites: FavouritesByImageId;
+  votes: VotesTalliedByImageId;
 
   // Request status
   uploadImageRequestStatus: RequestStatus;

@@ -26,6 +26,7 @@ const FABView = styled.TouchableOpacity`
 interface Props {
   title: string;
   onPress?: () => void;
+  testId?: string;
 }
 
 export default function Button({ title, onPress }: Props) {
@@ -36,9 +37,9 @@ export default function Button({ title, onPress }: Props) {
   );
 }
 
-export function FloatingActionButton({ title, onPress }: Props) {
+export function FloatingActionButton({ title, onPress, testId }: Props) {
   return (
-    <FABView onPress={onPress} activeOpacity={0.5}>
+    <FABView onPress={onPress} activeOpacity={0.5} testID={testId} id={testId}>
       <H2 color={Colors.asterix.altText}>{title}</H2>
     </FABView>
   );
