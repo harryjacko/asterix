@@ -4,6 +4,10 @@ This is an [Expo](https://expo.dev) project created with [`create-expo-app`](htt
 
 It is a personal cat app, where you can upload photos of your furry friends, vote on them and favourite. It's a technical take home test for Waracle.
 
+
+https://github.com/user-attachments/assets/45e15d83-5c44-4641-b981-554b869dfa18
+
+
 ## Pre-requisites
 
 Follow Expo's development environment steps found [here](https://docs.expo.dev/get-started/set-up-your-environment/)
