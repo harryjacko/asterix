@@ -2,7 +2,7 @@
 
 This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
 
-It is a personal cat app, where you can upload photos of your furry friends, vote on them and favourite. It's a technical take home test for Waracle.
+It is a personal cat app, where you can upload photos of your furry friends, vote on them and favourite. Built for a technical take-home test.
 
 
 https://github.com/user-attachments/assets/45e15d83-5c44-4641-b981-554b869dfa18
